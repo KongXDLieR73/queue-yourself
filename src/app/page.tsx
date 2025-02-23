@@ -74,7 +74,7 @@ export default function Home() {
           <div className={"flex flex-col items-center font-kanit font-weight-[100]" }>
             <p className={"text-6xl font-bold mb-14 mt-4 select-none "}>อ่านทำควยไรอะ</p>
 
-            <button className="mt-3 mb-32 px-auto py-3 w-[12rem] font-bold border-[2px] border-black text-1xl rounded-full active:bg-black active:text-white select-none transition-all ease-out duration-100" onClick={setCurrentState => state.Queuing}>
+            <button className="mt-3 mb-32 px-auto py-3 w-[12rem] font-bold border-[2px] border-black text-1xl rounded-full active:bg-black active:text-white select-none transition-all ease-out duration-100" onClick={() => setCurrentState(state.Queuing)}>
               กดตรงนี้ๆ
             </button>
           </div>
