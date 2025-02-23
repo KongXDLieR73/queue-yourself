@@ -40,7 +40,7 @@ const supabase = createClient(
 );
 
 export function Home() {
-  let queueNumber: string | null = "Loading...";
+  let queueNumber: string = "Loading...";
 
   const fetchQueueNumber = async () => {
     const { data, error } = await supabase

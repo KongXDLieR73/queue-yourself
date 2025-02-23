@@ -72,7 +72,7 @@ export default function Home() {
       {
         currentState == state.Home && <>
           <div className={"flex flex-col items-center font-kanit font-weight-[100]" }>
-            <p className={"text-6xl font-bold mb-14 mt-4 select-none "}>อ่านทำควยไรอะ</p>
+            <p className={"text-6xl font-bold mb-14 mt-4 select-none "}>ชอบคนอ่านคับ</p>
 
             <button className="mt-3 mb-32 px-auto py-3 w-[12rem] font-bold border-[2px] border-black text-1xl rounded-full active:bg-black active:text-white select-none transition-all ease-out duration-100" onClick={() => setCurrentState(state.Queuing)}>
               กดตรงนี้ๆ
@@ -85,11 +85,11 @@ export default function Home() {
         currentState == state.Queuing && (<>
           {/* Queue Number */}
           <h2 className="text-3xl font-semibold select-none">Your Queue</h2>
-          <p className="text-6xl font-bold mb-14 mt-4 select-none font-kanit">{queueNumber !== null ? queueNumber : "กดหาพ่องงง"}</p>
+          <p className="text-6xl font-bold mb-14 mt-4 select-none font-kanit">{queueNumber !== null ? queueNumber : "Loading..."}</p>
 
           {/* Buttons */}
           <button className="px-auto py-3 w-[12rem] font-bold border border-gray-300 bg-gray-300 text-gray-500 text-1xl rounded-full cursor-not-allowed font-kanit select-none">
-            หยอกน้าเตงๆ
+            รอแปบๆ
           </button>
           <button className="mt-3 mb-32 px-auto py-3 w-[12rem] font-bold border-[2px] border-black text-1xl rounded-full active:bg-black active:text-white select-none transition-all ease-out duration-100" onClick={() => setCurrentState(state.Home)}>
             CANCEL
