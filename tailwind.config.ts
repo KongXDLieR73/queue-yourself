@@ -10,7 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        kanit: ["Kanit", "serif"],
+        kanit: ["Kanit", "sans-serif"],
+        weight: [],
       },
 
       colors: {
