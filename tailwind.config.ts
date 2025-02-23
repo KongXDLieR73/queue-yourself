@@ -1,3 +1,4 @@
+import { Kanit } from "next/font/google";
 import type { Config } from "tailwindcss";
 
 export default {
@@ -8,6 +9,10 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        kanit: ["Kanit", "serif"],
+      },
+
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
