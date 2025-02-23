@@ -32,3 +32,45 @@ export default function RootLayout({
     </html>
   );
 }
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export function Home() {
+  let queueNumber: string | null = "Loading...";
+
+  const fetchQueueNumber = async () => {
+    const { data, error } = await supabase
+      .from("queues")
+      .select("number")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (error) {
+      console.error("Error fetching queue number:", error);
+      queueNumber = "Error fetching queue"; // Update variable
+    } else {
+      queueNumber = data?.number || "No queue"; // Update variable
+    }
+
+    // Manually update the displayed value
+    const queueNumberDisplay = document.getElementById("queue-number");
+    if (queueNumberDisplay) {
+      queueNumberDisplay.innerText = queueNumber;
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center min-h-screen w-screen bg-white text-black overflow-hidden">
+      <h2 className="text-3xl font-semibold select-none">Your Queue</h2>
+      <p id="queue-number" className="text-6xl font-bold mb-14 mt-4 select-none">{queueNumber}</p>
+      <button onClick={fetchQueueNumber} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+        Refresh Queue Number
+      </button>
+    </div>
+  );
+}
