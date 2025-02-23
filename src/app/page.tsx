@@ -6,6 +6,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { Kanit } from "next/font/google";
+import { supabase } from "@/lib/supabase";
 
 enum state {
   Home,
@@ -17,6 +18,7 @@ enum state {
 export default function Home() {
   const [currentTime, setCurrentTime] = useState<string | null>(null);
   const [currentState, setCurrentState] = useState<state>(state.Home);
+  const [queueNumber, setQueueNumber] = useState<number | null>(null);
 
   useEffect(() => {
     const updateTime = () => {
@@ -30,6 +32,31 @@ export default function Home() {
     document.body.style.overflow = "hidden";
     
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const fetchQueueNumber = async () => {
+      const { count, error } = await supabase
+        .from("queues")
+        .select("*", { count: "exact" });
+
+      if (error) {
+        console.error("Error fetching queue number:", error);
+      } else {
+        setQueueNumber(count ?? 0);
+      }
+    };
+
+    fetchQueueNumber();
+
+    const subscription = supabase
+      .channel("queues")
+      .on("postgres_changes", { event: "*", schema: "public", table: "queues" }, fetchQueueNumber)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, []);
 
   return (
@@ -58,9 +85,8 @@ export default function Home() {
         currentState == state.Queuing && (<>
           {/* Queue Number */}
           <h2 className="text-3xl font-semibold select-none">Your Queue</h2>
-          <p className="text-6xl font-bold mb-14 mt-4 select-none">TQANG.W</p>
+          <p className="text-6xl font-bold mb-14 mt-4 select-none">{queueNumber !== null ? queueNumber : "Loading..."}</p>
 
-          
           {/* Buttons */}
           <button className="px-auto py-3 w-[12rem] font-bold border border-gray-300 bg-gray-300 text-gray-500 text-1xl rounded-full cursor-not-allowed select-none">
             WAITING...
@@ -70,7 +96,6 @@ export default function Home() {
           </button>
         </>)
       }
-      
     </div>
   );
 }
