@@ -35,15 +35,15 @@ export default function Home() {
       </div>
       
       {/* Queue Number */}
-      <h2 className="text-xl font-semibold">Your Queue</h2>
-      <p className="text-6xl font-bold">17</p>
+      <h2 className="text-3xl font-semibold">Your Queue</h2>
+      <p className="text-8xl font-bold mb-8 mt-4">17</p>
       
       {/* Buttons */}
-      <button className="mt-4 px-6 py-2 bg-gray-300 text-gray-600 rounded-full cursor-not-allowed" disabled>
-        Wait...
+      <button className="px-auto py-3 w-[12rem] border border-gray-300 bg-gray-300 text-gray-600 text-1xl rounded-full cursor-not-allowed">
+        WAITING...
       </button>
-      <button className="mt-2 px-6 py-2 border border-black rounded-full hover:bg-gray-100">
-        Cancel
+      <button className="mt-3 px-auto py-3 w-[12rem] border border-black text-1xl rounded-full hover:bg-gray-100">
+        CANCEL
       </button>
       
     </div>
