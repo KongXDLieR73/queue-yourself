@@ -146,26 +146,45 @@ export default function Home() {
   // ✅ ฟังก์ชันยกเลิกคิว
   const handleCancelQueue = async () => {
     if (!sessionId) return;
-
-    // 1️⃣ ลบคิวของตัวเอง
+  
+    // 1️⃣ ดึง queue_number ของคนที่กดยกเลิก
+    const { data: userQueue, error: fetchError } = await supabase
+      .from("queues")
+      .select("queue_number")
+      .eq("session_id", sessionId)
+      .single();
+  
+    if (fetchError) {
+      console.error("Error fetching queue data:", fetchError);
+      return;
+    }
+  
+    const userQueueNumber = userQueue?.queue_number;
+  
+    // 2️⃣ ลบคิวของคนที่กดยกเลิก
     const { error: deleteError } = await supabase
-      .from('queues')
+      .from("queues")
       .delete()
-      .eq('session_id', sessionId);
-
+      .eq("session_id", sessionId);
+  
     if (deleteError) {
       console.error("Error deleting queue:", deleteError);
       return;
     }
-
-    // 2️⃣ อัพเดตให้คิวทุกคนเลื่อนขึ้น
-    await updateQueueNumbers();
-
-    // 3️⃣ รีเซ็ตค่า
-    setQueueNumber(null);
-    setCurrentState(State.Home);
+  
+    // 3️⃣ ลด queue_number ของคนที่เหลืออยู่
+    const { error: updateError } = await supabase
+      .rpc("decrement_queue_numbers", { starting_queue: userQueueNumber });
+  
+    if (updateError) {
+      console.error("Error updating queue numbers:", updateError);
+      return;
+    }
     setCancelPrompt(false);
+    setCurrentState(State.Home); // กลับไปหน้า Home
   };
+    
+  
 
   const handleConfirmed = async () => {
     if (!sessionId) return;
