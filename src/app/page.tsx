@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { supabase } from '../lib/supabaseClient'; // ใส่ที่ตั้งของไฟล์ supabaseClient
 import { v4 as uuidv4 } from "uuid";
 
+import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
 
 enum State {
   Home,
@@ -61,10 +62,16 @@ export default function Home() {
         .single();
 
       if (error) {
-        
+        //console.error("Error fetching queue number:", error);
       } else if (data) {
+        const queueData = data as QueueData;
         setQueueNumber((data as QueueData).queue_number);
         setCurrentState(State.Queuing);
+
+        // ✅ เปลี่ยนเป็น State.Confirming ถ้าคิวเป็น 0
+      if (queueData.queue_number === 0) {
+        setCurrentState(State.Confirming);
+      }
       }
     };
 
@@ -76,15 +83,21 @@ export default function Home() {
         "postgres_changes",
         { event: "*", schema: "public", table: "queues" },
         (payload) => {
+          const updatedQueue = payload.new as QueueData;
           console.log("Realtime update:", payload);
 
           if ((payload.new as QueueData).session_id === sessionId) {
             setQueueNumber((payload.new as QueueData).queue_number);
+
+            if (updatedQueue.queue_number === 0) {
+              setCurrentState(State.Confirming);
+            }
           }
+          
         }
       )
       .subscribe();
-      
+
     return () => {
       supabase.removeChannel(subscription);
     };
@@ -154,10 +167,32 @@ export default function Home() {
     setCancelPrompt(false);
   };
 
+  const handleConfirmed = async () => {
+    if (!sessionId) return;
+
+    // 1️⃣ ลบคิวของตัวเอง
+    const { error: deleteError } = await supabase
+      .from('queues')
+      .delete()
+      .eq('session_id', sessionId);
+
+    if (deleteError) {
+      console.error("Error deleting queue:", deleteError);
+      return;
+    }
+
+    // 2️⃣ อัพเดตให้คิวทุกคนเลื่อนขึ้น
+    await updateQueueNumbers();
+
+    // 3️⃣ รีเซ็ตค่า
+    setQueueNumber(null);
+    setCurrentState(State.Finished);
+  };
+
   return (
     <div className={"flex flex-col items-center min-h-screen w-screen bg-white text-black overflow-hidden"}>
       {/* Timestamp and Status */}
-      <div className="flex flex-col text-center mt-[20vh] mb-12">
+      <div className="flex flex-col text-center mt-[10vh] mb-12">
         <p className="text-sm select-none">Session ID: {sessionId}</p>
         <p className="text-sm select-none">{currentTime ? currentTime : "Loading..."}</p>
         <div className="flex items-center justify-center gap-2">
@@ -165,11 +200,12 @@ export default function Home() {
           <p className="text-sm select-none">QYS Online</p>
         </div>
       </div>
+
       {
         currentState == State.Home && <>
           <div className={"flex flex-col items-center font-kanit font-weight-[100]" }>
             <p className={"text-[3.5rem] font-bold mb- mt-4 select-none "}>ชอบคนอ่านคับ</p>
-            <p className={"text-3xl font-bold mb- mt- select-none "}>ละอ่านทำฃวยไรหล่ะ</p>
+            <p className={"text-3xl font-bold mb- mt- select-none "}>ละอ่านทำฃวยไรอะ</p>
             <p className={"text-2xl font-bold mb-14 mt-6 select-none "}>หยอกน้าเตงๆ</p>
 
             <button className="mt-3 mb-32 px-auto py-3 w-[12rem] font-bold border-[2px] border-black text-1xl rounded-full bg-black text-white active:text-black active:bg-white select-none transition-all ease-out duration-100" onClick={handleQueue}>
@@ -183,7 +219,7 @@ export default function Home() {
         currentState == State.Queuing && (<>
           {/* Queue Number */}
           <h2 className="text-3xl font-kanit select-none">กดหาพ่อมึงอะไอ่ต้าววว 😝</h2>
-          <p className="text-6xl font-bold mb-14 mt-4 select-none font-kanit">{queueNumber !== null ? queueNumber : "Loading..."}</p>
+          <p className="text-[10rem] font-medium mb-4 select-none font-kanit">{queueNumber !== null ? queueNumber : "Loading..."}</p>
 
           {/* Buttons */}
           <button className="px-auto py-3 w-[12rem] font-bold border border-gray-300 bg-gray-300 text-gray-500 rounded-full cursor-not-allowed font-kanit select-none">
@@ -211,6 +247,24 @@ export default function Home() {
               </div>
             </>)
           }
+        </>)
+      }
+
+      {
+        currentState == State.Confirming && (<>
+          <h2 className="text-3xl font-kanit select-none">กดหาพ่อมึงอะไอ่ต้าววว 😝</h2>
+          <CheckRoundedIcon sx={{ fontSize: 200 }} className="fill-black mt-3"/>
+          {/* Buttons */}
+          <button className="mt-3 mb-32 px-auto py-[0.85rem] w-[12rem] font-bold border-[2px] border-black text-[0.9rem] rounded-full active:bg-black active:text-white select-none font-kanit transition-all ease-out duration-100" onClick={handleConfirmed}>
+            ไก่มาได้มับ
+          </button>
+        </>)
+      }
+
+      {
+        currentState == State.Finished && (<>
+          <h2 className="text-5xl font-kanit font-bold select-none">{'Thank You <3'}</h2>
+          <CheckRoundedIcon sx={{ fontSize: 200 }} className="fill-black"/>
         </>)
       }
     </div>
