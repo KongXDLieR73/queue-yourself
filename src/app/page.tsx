@@ -209,10 +209,12 @@ export default function Home() {
   };
 
   return (
+    
     <div className={"flex flex-col items-center min-h-screen w-screen bg-white text-black overflow-hidden"}>
+    <title>MWIT-QYS</title>
+
       {/* Timestamp and Status */}
-      <div className="flex flex-col text-center mt-[10vh] mb-12">
-        <p className="text-sm select-none">Session ID: {sessionId}</p>
+      <div className="flex flex-col text-center mt-[15vh] mb-12">
         <p className="text-sm select-none">{currentTime ? currentTime : "Loading..."}</p>
         <div className="flex items-center justify-center gap-2">
           <span className="w-2 h-2 bg-green-500 rounded-full"></span>
@@ -223,12 +225,11 @@ export default function Home() {
       {
         currentState == State.Home && <>
           <div className={"flex flex-col items-center font-kanit font-weight-[100]" }>
-            <p className={"text-[3.5rem] font-bold mb- mt-4 select-none "}>ชอบคนอ่านคับ</p>
-            <p className={"text-3xl font-bold mb- mt- select-none "}>ละอ่านทำฃวยไรอะ</p>
-            <p className={"text-2xl font-bold mb-14 mt-6 select-none "}>หยอกน้าเตงๆ</p>
+            <p className={"text-[6rem] font-bold mb- mt- select-none "}>Lebron</p>
+            <p className={"text-5xl font-bold mb-20 mt- select-none "}>Steakhouse</p>
 
             <button className="mt-3 mb-32 px-auto py-3 w-[12rem] font-bold border-[2px] border-black text-1xl rounded-full bg-black text-white active:text-black active:bg-white select-none transition-all ease-out duration-100" onClick={handleQueue}>
-              กดตรงนี้ๆ
+              เข้าคิว
             </button>
           </div>
         </>
@@ -237,12 +238,12 @@ export default function Home() {
       {
         currentState == State.Queuing && (<>
           {/* Queue Number */}
-          <h2 className="text-3xl font-kanit select-none">กดหาพ่อมึงอะไอ่ต้าววว 😝</h2>
+          <h2 className="text-3xl font-kanit select-none">คิวของคุณ</h2>
           <p className="text-[10rem] font-medium mb-4 select-none font-kanit">{queueNumber !== null ? queueNumber : "Loading..."}</p>
 
           {/* Buttons */}
           <button className="px-auto py-3 w-[12rem] font-bold border border-gray-300 bg-gray-300 text-gray-500 rounded-full cursor-not-allowed font-kanit select-none">
-            ไก่มาได้มับ
+            รอสักครู่...
           </button>
           <button className="mt-3 mb-32 px-auto py-[0.85rem] w-[12rem] font-bold border-[2px] border-black text-[0.9rem] rounded-full active:bg-black active:text-white select-none font-kanit transition-all ease-out duration-100" onClick={() => setCancelPrompt(true)}>
             ยกเลิก
@@ -252,7 +253,7 @@ export default function Home() {
               <div className="flex z-0 bg-black bg-opacity-20 min-h-screen w-screen justify-center items-center absolute">
                 <span className="relative z-10 p-7 bg-white w-[22rem] h-[10rem] rounded-[3rem] text-black">
                   <h1 className="text-2xl font-kanit">
-                    ไม่รักเราแล้วอ่อ?
+                    ยืนยันที่จะยกเลิกหรือไม่?
                   </h1>
                   <div className="flex flex-row w-[18.6rem] absolute gap-3 bottom-6">
                     <button className="basis-1/2 px-auto py-[0.85rem] w-[8rem] font-bold border-[2px] text-red-500 border-red-500 text-[0.9rem] rounded-full active:bg-red-500 active:text-white select-none font-kanit transition-all ease-out duration-100" onClick={handleCancelQueue}>
@@ -271,11 +272,11 @@ export default function Home() {
 
       {
         currentState == State.Confirming && (<>
-          <h2 className="text-3xl font-kanit select-none">กดหาพ่อมึงอะไอ่ต้าววว 😝</h2>
+          <h2 className="text-3xl font-kanit select-none">ถึงคิวของคุณแล้ว</h2>
           <CheckRoundedIcon sx={{ fontSize: 200 }} className="fill-black mt-3"/>
           {/* Buttons */}
           <button className="mt-3 mb-32 px-auto py-[0.85rem] w-[12rem] font-bold border-[2px] border-black text-[0.9rem] rounded-full active:bg-black active:text-white select-none font-kanit transition-all ease-out duration-100" onClick={handleConfirmed}>
-            ไก่มาได้มับ
+            ยืนยัน Order
           </button>
         </>)
       }
